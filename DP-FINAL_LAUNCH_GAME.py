@@ -151,19 +151,36 @@ def load_game_progress():
         return None
 
 def save_high_score(player_name, score, level):
-    """Save a high score to the database"""
+    """Save a high score to the database only if it's a new personal best"""
     try:
         conn = sqlite3.connect(resource_path('game_data.db'))
         cursor = conn.cursor()
         
+        # --- NEW: Check if this is a new high score for the player ---
         cursor.execute('''
-            INSERT INTO high_scores (player_name, score, level)
-            VALUES (?, ?, ?)
-        ''', (player_name, score, level))
+            SELECT MAX(score) FROM high_scores WHERE player_name = ?
+        ''', (player_name,))
         
-        conn.commit()
-        conn.close()
-        return True
+        result = cursor.fetchone()
+        # If the player has no high scores, result will be (None,)
+        current_high_score = result[0] if result[0] is not None else 0
+        
+        # Only save if the new score is higher than the current record
+        if score > current_high_score:
+            cursor.execute('''
+                INSERT INTO high_scores (player_name, score, level)
+                VALUES (?, ?, ?)
+            ''', (player_name, score, level))
+            print(f"New high score saved for {player_name}: {score}")
+            conn.commit()
+            conn.close()
+            return True
+        else:
+            print(f"Score {score} not higher than {player_name}'s best of {current_high_score}. Not saved.")
+            conn.close()
+            return False
+        # --- END OF NEW CODE ---
+            
     except Exception as e:
         print(f"Error saving high score: {e}")
         return False
