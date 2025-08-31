@@ -53,7 +53,8 @@ pip install pygame
 
 **Clone the repository**
 
-git clone https://github.com/AtienoAA/Contextual-and-Sensory-Based-Navigation-in-2D-Games.git         
+git clone https://github.com/AtienoAA/Contextual-and-Sensory-Based-Navigation-in-2D-Games.git
+
 cd Contextual-and-Sensory-Based-Navigation-in-2D-Games 
 
 
