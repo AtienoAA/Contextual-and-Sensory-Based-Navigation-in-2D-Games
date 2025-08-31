@@ -12,6 +12,7 @@ pip install pygame
 python DP-FINAL_LAUNCH_GAME.py
 
 **Key Features**
+
 Enter username
 
 Enjoy background music while playing
