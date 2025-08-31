@@ -18,6 +18,8 @@ Enjoy background music while playing
 
 Select level 1 to start (7 levels total)
 
+Each level font change different colors as the player proceed to the next level
+
 Follow instructions: SPACEBAR to jump, arrow keys to move it will show you alert of move right or move left
 
 Collect coins and receive alerts when collecting coins
