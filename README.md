@@ -6,6 +6,7 @@ The game demonstrates how visual and auditory cues can guide player navigation a
 The player controls an avatar through seven levels, avoiding blob and lava to die, collecting coins to receive alerts by showing points earned, receiving alerts to show directions like for example move right and move left and complete levels fast before timer ends to reach the exit portal.
 
 **How to Run**
+
 Ensure Python 3 and Pygame are installed:
 pip install pygame
 
