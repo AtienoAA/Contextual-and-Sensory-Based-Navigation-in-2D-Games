@@ -11,6 +11,7 @@ Ensure Python 3 and Pygame are installed:
 pip install pygame
 
 **Run the main.py file to launch the game**
+
 python DP-FINAL_LAUNCH_GAME.py
 
 **Key Features**
