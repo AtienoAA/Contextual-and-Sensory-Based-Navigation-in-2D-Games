@@ -3,7 +3,7 @@
 
 This is a 2D puzzle-platformer built in Python 3 using the Pygame library. 
 The game demonstrates how visual and auditory cues can guide player navigation and enhance the user experience.
-The player controls an avatar through seven levels, avoiding blob and lava to die, collecting coins to receive alerts by showing points earned, receiving alerts to show directions like for example move right and move left and complete levels fast before timer ends to reach the exit portal.
+The player controls an avatar through seven levels, avoiding blob and lava to die, collecting coins to receive alerts by showing points earned, receiving alerts to show directions like for example move right and move left and complete levels fast before timer ends to reach the exit portal and settings to turn on or off the volume of the music.
 
 **How to Run**
 
