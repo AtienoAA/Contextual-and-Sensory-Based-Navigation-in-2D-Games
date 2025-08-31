@@ -1,50 +1,46 @@
 **Overview**
-**Contextual and Sensory-Based Navigation in 2D Games** is a puzzle-platformer built in Python using the Pygame library. 
+**Contextual and Sensory-Based Navigation in 2D Games** 
+This is a 2D puzzle-platformer built in Python using the Pygame library. 
 The game demonstrates how visual and auditory cues can guide player navigation and enhance the user experience.
-The player controls an avatar through seven levels, avoiding enemies and lava, collecting coins, and racing against a timer to reach the exit portal.
-
-**Key Features**
-Sensory Guidance System: On-screen text alerts and audio cues provide real-time feedback and hints.
-
-**Progressive Difficulty**
-Seven levels with increasing complexity.
-
-**Data Persistence** An SQLite database saves highest_scores, player_progress and game_settings.
-**Player Profiles**: Players are prompted to **Enter a username** upon starting the game to save player_progress and highest_score.
-
-**Controls**
-Move Left: LEFT ARROW key
-
-Move Right: RIGHT ARROW key
-
-Jump: SPACEBAR
+The player controls an avatar through seven levels, avoiding enemies and lava, collecting coins, and complete levels fast before timer ends to reach the exit portal.
 
 **How to Run**
 Ensure Python 3 and Pygame are installed:
 pip install pygame
 
 **Run the main.py file to launch the game**
-python main.py
+python DP-FINAL_LAUNCH_GAME.py
+
+**Key Features**
+Enter username
+
+Enjoy background music while playing
+
+Select level 1 to start (7 levels total)
+
+Follow instructions: SPACEBAR to jump, arrow keys to move it will show you alert of move right or move left
+
+Collect coins and receive alerts when collecting coins
+
+Avoid hazards and lava so that you don't die
+
+Complete levels fast before timer ends
+
+Pause, exit and restart the game any time
+
+After completing levels you can save the game when you click pause to save player_progress, highest_score and game settings and it will be saved in the database(sqlite3). 
+
+Reach exit to win
 
 **Technologies Used**
 Programming Language: Python 3.x
-
-**Game Development Library**
+Database:SQlite3
 Pygame
-
-**Database** 
-SQLite3
-
-**Version Control**
 Git
+Vs Code
 
-**IDE** 
-VS Code
-
-**Prerequisites**
+**Requirements**
 Python 3.x
-
-**Pygame Library install via pip**
 pip install pygame
 
 **Clone the repository**
