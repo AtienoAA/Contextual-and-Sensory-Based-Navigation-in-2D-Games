@@ -39,6 +39,7 @@ After completing levels you can save the game when you click pause to save playe
 Reach exit to win
 
 **Technologies Used**
+
 Programming Language: Python 3.x
 Database:SQlite3
 Pygame
@@ -46,10 +47,12 @@ Git
 Vs Code
 
 **Requirements**
+
 Python 3.x
 pip install pygame
 
 **Clone the repository**
+
 git clone https://github.com/AtienoAA/Contextual-and-Sensory-Based-Navigation-in-2D-Games.git
 
 
