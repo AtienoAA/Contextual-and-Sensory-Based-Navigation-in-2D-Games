@@ -14,7 +14,7 @@ pip install pygame
 
 python DP-FINAL_LAUNCH_GAME.py
 
-**Key Features**
+**Key Features:**
 
 Enter username
 
@@ -22,15 +22,15 @@ Enjoy background music while playing
 
 Select level 1 to start (7 levels total)
 
-Each level font change different colors as the player proceed to the next level
-
 Follow instructions: SPACEBAR to jump, arrow keys to move it will show you alert of move right or move left
+
+Each level font change different colors as the player proceed to the next level
 
 Collect coins and receive alerts when collecting coins
 
-Avoid hazards and lava so that you don't die
+Avoid to be hitted by blob and lava so that you don't die
 
-Complete levels fast before timer ends
+Complete all levels fast before timer ends
 
 Pause, exit and restart the game any time
 
@@ -38,20 +38,20 @@ After completing levels you can save the game when you click pause to save playe
 
 Reach exit to win
 
-**Technologies Used**
+**Technologies Used:**
 
-Programming Language: Python 3.x
+Programming Language: Python 3
 Database:SQlite3
 Pygame
 Git
 Vs Code
 
-**Requirements**
+**Requirements:**
 
-Python 3.x
+Python 3
 pip install pygame
 
-**Clone the repository**
+**Clone the repository:**
 
 git clone https://github.com/AtienoAA/Contextual-and-Sensory-Based-Navigation-in-2D-Games.git
 
