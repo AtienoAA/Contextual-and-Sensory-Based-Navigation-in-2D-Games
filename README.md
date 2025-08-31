@@ -1,6 +1,5 @@
 **Overview**
-**Contextual and Sensory-Based Navigation in 2D Games** 
-This is a 2D puzzle-platformer built in Python using the Pygame library. 
+**Contextual and Sensory-Based Navigation in 2D Games** This is a 2D puzzle-platformer built in Python using the Pygame library. 
 The game demonstrates how visual and auditory cues can guide player navigation and enhance the user experience.
 The player controls an avatar through seven levels, avoiding enemies and lava, collecting coins, and complete levels fast before timer ends to reach the exit portal.
 
