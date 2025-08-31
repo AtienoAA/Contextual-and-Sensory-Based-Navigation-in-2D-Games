@@ -1,0 +1,284 @@
+import pygame
+import pickle
+from os import path
+import io
+import base64
+import json
+
+pygame.init()
+
+clock = pygame.time.Clock()
+fps = 60
+
+# Game window
+tile_size = 50
+cols = 20
+margin = 100
+screen_width = tile_size * cols
+screen_height = (tile_size * cols) + margin
+
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption('Level Editor - Difficulty Adjusted')
+
+# Load images
+sun_img = pygame.image.load('img/sun.png')
+sun_img = pygame.transform.scale(sun_img, (tile_size, tile_size))
+bg_img = pygame.image.load('img/sky.png')
+bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height - margin))
+dirt_img = pygame.image.load('img/dirt.png')
+grass_img = pygame.image.load('img/grass.png')
+blob_img = pygame.image.load('img/blob.png')
+platform_x_img = pygame.image.load('img/platform_x.png')
+platform_y_img = pygame.image.load('img/platform_y.png')
+lava_img = pygame.image.load('img/lava.png')
+coin_img = pygame.image.load('img/coin.png')
+exit_img = pygame.image.load('img/exit.png')
+save_img = pygame.image.load('img/save_btn.png')
+load_img = pygame.image.load('img/load_btn.png')
+export_img = pygame.image.load('img/save_btn.png') # Reusing save image for export
+
+# Define game variables
+clicked = False
+level = 1
+max_levels = 7
+
+# Define colors
+white = (255, 255, 255)
+green = (144, 201, 120)
+red = (255, 0, 0)
+
+font = pygame.font.SysFont('Futura', 24)
+small_font = pygame.font.SysFont('Futura', 16)
+
+# Predefined level designs for difficulty tiers
+level_designs = {
+1: None, # Basic tutorial level (keep default)
+
+# Medium difficulty (2-4)
+2: {
+'platforms': [
+(5, 18, 11, 2), # Ground platform
+(3, 15, 4, 1), # Floating platforms
+(8, 12, 4, 1),
+(13, 9, 4, 1)
+],
+'enemies': [(5, 17), (10, 14), (15, 8)],
+'lava': [(1, 17, 4), (16, 17, 3)],
+'coins': [(4,15), (9,11), (14,8), (7,16), (12,13), (17,10), (6,7), (13,5)],
+'exit': (17, 8)
+},
+
+3: {
+'platforms': [
+(4, 18, 13, 2), # Ground
+(5, 14, 1, 1, 4), # Moving (type 4)
+(12, 10, 1, 1, 4),
+(2, 12, 3, 1),
+(15, 8, 3, 1)
+],
+'enemies': [(8,17), (5,13), (12,9), (16,7)],
+'lava': [(1,17,3), (17,17,2), (7,13,3)],
+'coins': [(6,17), (10,17), (14,17), (5,13), (12,9), (16,7), (3,11), (8,6), (15,4), (17,2)],
+'exit': (2, 7)
+},
+
+4: {
+'platforms': [
+(3, 18, 14, 2),
+(6, 15, 2, 1),
+(12, 15, 2, 1),
+(4, 12, 2, 1, 5), # Vertical moving
+(14, 12, 2, 1, 5),
+(9, 9, 2, 1),
+(5, 6, 2, 1)
+],
+'enemies': [(7,17), (6,14), (13,14), (4,11), (15,11), (10,8)],
+'lava': [(1,17,2), (17,17,2), (8,15,3), (4,9,4)],
+'coins': [(5,17), (10,17), (15,17), (7,14), (13,14), (5,11), (15,11), (10,8), (6,5), (14,3)],
+'exit': (16, 5)
+},
+
+# Hard difficulty (5-7)
+5: {
+'platforms': [
+(2, 18, 16, 2),
+(5, 15, 2, 1, 4), # Moving
+(13, 15, 2, 1, 4),
+(9, 12, 2, 1, 5),
+(4, 9, 2, 1, 5),
+(14, 9, 2, 1, 5),
+(7, 6, 2, 1),
+(11, 6, 2, 1)
+],
+'enemies': [(6,17), (12,17), (6,14), (14,14), (10,11), (5,8), (15,8), (8,5), (12,5)],
+'lava': [(1,17,1), (18,17,1), (7,15,5), (11,15,5), (3,9,3), (15,9,3)],
+'coins': [(4,17), (8,17), (12,16), (16,17), (5,14), (10,14), (15,14), (10,11), (5,8), (15,8), (8,5), (12,5), (9,3)],
+'exit': (17, 4)
+},
+
+6: {
+'platforms': [
+(1, 18, 18, 2),
+(3, 15, 2, 1, 5),
+(15, 15, 2, 1, 5),
+(7, 13, 2, 1, 4),
+(11, 13, 2, 1, 4),
+(5, 10, 2, 1, 5),
+(13, 10, 2, 1, 5),
+(9, 7, 2, 1),
+(4, 4, 2, 1),
+(14, 4, 2, 1)
+],
+'enemies': [(4,17), (10,17), (16,17), (4,14), (16,14), (8,12), (12,12), (6,9), (14,9), (10,6)],
+'lava': [(2,15,1), (17,15,1), (5,13,3), (12,13,3), (6,10,3), (11,10,3), (8,7,1), (10,7,1)],
+'coins': [(3,17), (7,17), (13,17), (17,17), (4,14), (10,14), (16,14), (8,12), (12,12), (6,9), (14,9), (10,6), (5,3), (15,3)],
+'exit': (9, 3)
+},
+
+7: {
+'platforms': [
+(1, 18, 18, 2),
+(4, 16, 2, 1, 4),
+(14, 16, 2, 1, 4),
+(7, 14, 2, 1, 5),
+(11, 14, 2, 1, 5),
+(3, 12, 2, 1),
+(15, 12, 2, 1),
+(6, 10, 2, 1, 4),
+(12, 10, 2, 1, 4),
+(9, 8, 2, 1),
+(4, 6, 2, 1, 5),
+(14, 6, 2, 1, 5),
+(7, 4, 2, 1),
+(11, 4, 2, 1),
+(9, 2, 2, 1)
+],
+'enemies': [(5,17), (10,17), (15,17), (5,15), (15,15), (8,13), (12,13), (7,11), (13,11), (6,9), (14,9), (10,7), (5,5), (15,5), (8,3), (12,3)],
+'lava': [(2,16,2), (16,16,2), (5,14,3), (12,14,3), (4,12,1), (16,12,1), (7,10,3), (11,10,3), (8,8,1), (10,8,1), (5,6,3), (13,6,3)],
+'coins': [(4,17), (8,17), (12,17), (16,17), (5,15), (10,15), (15,15), (8,13), (12,13), (7,11), (13,11), (6,9), (14,9), (10,7), (5,5), (15,5), (8,3), (12,3), (9,1)],
+'exit': (9, 0)
+}
+}
+
+def create_empty_world():
+world_data = []
+for row in range(20):
+world_data.append([0] * 20)
+return world_data
+
+def set_boundaries(world_data):
+for tile in range(20):
+world_data[19][tile] = 2 # Grass bottom
+world_data[0][tile] = 1 # Dirt top
+world_data[tile][0] = 1 # Dirt left
+world_data[tile][19] = 1 # Dirt right
+return world_data
+
+def apply_level_design(level_num):
+if level_num not in level_designs or level_designs[level_num] is None:
+world_data = create_empty_world()
+return set_boundaries(world_data)
+
+design = level_designs[level_num]
+world_data = create_empty_world()
+
+# Set boundaries
+world_data = set_boundaries(world_data)
+
+# Add platforms (x, y, width, height, [type=1])
+for platform in design['platforms']:
+x, y, w, h = platform[:4]
+tile_type = platform[4] if len(platform) > 4 else 1
+for i in range(w):
+for j in range(h):
+if x+i < 20 and y+j < 20:
+world_data[y+j][x+i] = tile_type
+
+# Add enemies (blobs)
+for enemy in design['enemies']:
+x, y = enemy
+if x < 20 and y < 20:
+world_data[y][x] = 3
+
+# Add lava
+for lava in design['lava']:
+x, y, w = lava
+for i in range(w):
+if x+i < 20 and y < 20:
+world_data[y][x+i] = 6
+
+# Add coins
+for coin in design['coins']:
+x, y = coin
+if x < 20 and y < 20:
+world_data[y][x] = 7
+
+# Add exit
+if 'exit' in design:
+x, y = design['exit']
+if x < 20 and y < 20:
+world_data[y][x] = 8
+
+return world_data
+
+# Initialize world data
+world_data = apply_level_design(level)
+
+# [Rest of your existing functions: draw_text, draw_grid, draw_world, Button class...]
+
+# Create buttons
+save_button = Button(screen_width // 2 - 150, screen_height - 80, save_img)
+load_button = Button(screen_width // 2 + 50, screen_height - 80, load_img)
+export_button = Button(screen_width // 2 - 50, screen_height - 80, export_img)
+
+def export_levels():
+"""Export all levels as a downloadable JSON file"""
+all_levels = {}
+for lvl in range(1, max_levels+1):
+try:
+if path.exists(f'level{lvl}_data'):
+with open(f'level{lvl}_data', 'rb') as f:
+all_levels[lvl] = pickle.load(f)
+else:
+all_levels[lvl] = apply_level_design(lvl)
+except:
+all_levels[lvl] = apply_level_design(lvl)
+
+# Create a JSON string
+levels_json = json.dumps(all_levels, indent=2)
+
+# In a real application, you would save this to a file or provide download
+print("=== LEVEL DATA (Copy this) ===")
+print(levels_json)
+
+# For demonstration, we'll just show an alert
+return "Levels exported to console. In a web app, this would trigger a download."
+
+# Main game loop
+run = True
+while run:
+clock.tick(fps)
+
+screen.fill(green)
+screen.blit(bg_img, (0, 0))
+screen.blit(sun_img, (tile_size * 2, tile_size * 2))
+
+# Handle buttons
+if save_button.draw():
+with open(f'level{level}_data', 'wb') as f:
+pickle.dump(world_data, f)
+
+if load_button.draw():
+if path.exists(f'level{level}_data'):
+with open(f'level{level}_data', 'rb') as f:
+world_data = pickle.load(f)
+else:
+world_data = apply_level_design(level)
+
+if export_button.draw():
+export_result = export_levels()
+draw_text("Levels exported to console!", small_font, white, screen_width//2 - 100, screen_height - 120)
+
+# [Rest of your existing event handling and drawing code...]
+
+pygame.quit()
