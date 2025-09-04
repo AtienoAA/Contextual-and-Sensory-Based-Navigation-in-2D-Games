@@ -191,10 +191,16 @@ def get_high_scores(limit=10):
         conn = sqlite3.connect(resource_path('game_data.db'))
         cursor = conn.cursor()
         
+        # GET ONLY THE BEST SCORE FOR EACH PLAYER WITH CORRECT LEVEL AND DATE
         cursor.execute('''
-            SELECT player_name, score, level, date_achieved 
-            FROM high_scores 
-            ORDER BY score DESC, level DESC 
+            SELECT h1.player_name, h1.score, h1.level, h1.date_achieved 
+            FROM high_scores h1
+            INNER JOIN (
+                SELECT player_name, MAX(score) as max_score
+                FROM high_scores 
+                GROUP BY player_name
+            ) h2 ON h1.player_name = h2.player_name AND h1.score = h2.max_score
+            ORDER BY h1.score DESC, h1.level DESC 
             LIMIT ?
         ''', (limit,))
         
@@ -209,6 +215,11 @@ def get_high_scores(limit=10):
                 'level': result[2],
                 'date': result[3]
             })
+        # TEMPORARY: Print what the function returns
+        print("High scores returned by get_high_scores():")
+        for hs in high_scores:
+            print(f"{hs['player_name']}: {hs['score']} (Level {hs['level']})")
+        print()
             
         return high_scores
     except Exception as e:
@@ -1670,15 +1681,25 @@ while run:
                 if start_button_rect.collidepoint(event.pos) and name_input_text.strip():
                     player_name = name_input_text.strip()
                     name_input_screen = False
-                    level_select_menu = True
+                    # RESET LEVEL TO 1 FOR NEW PLAYER
+                    level = 1
+                    world = reset_level(level)
+                    game_over = 0
+                    score = 0
+                    main_menu = False  # Exit main menu and start the game
                     print(f"Player name set to: {player_name}")
             
             if event.type == pygame.KEYDOWN and name_input_active:
                 if event.key == pygame.K_RETURN:
-                    if name_input_text.strip():
-                        player_name = name_input_text.strip()
-                        name_input_screen = False
-                        level_select_menu = True
+                   if name_input_text.strip():
+                      player_name = name_input_text.strip()
+                      name_input_screen = False
+                      # RESET LEVEL TO 1 FOR NEW PLAYER
+                      level = 1
+                      world = reset_level(level)
+                      game_over = 0
+                      score = 0
+                      main_menu = False  # Exit main menu and start the game
                 elif event.key == pygame.K_BACKSPACE:
                     name_input_text = name_input_text[:-1]
                 elif event.key == pygame.K_ESCAPE:
@@ -1753,11 +1774,15 @@ while run:
             level_select_menu = False
             main_menu = True # Go back to the main menu
             title_animation_start_time = 0 # NEW: Reset animation timer
-            show_main_menu_buttons = False 
+            show_main_menu_buttons = False
+            #RESET LEVEL WHEN RETURNING TO MAIN MENU
+            level = 1
+            score = 0
+            game_over = 0
         elif selected_level is not None: # A level was selected
             level = selected_level # Set the chosen level
             
-            # FIX: Correctly initialize the world for the selected level
+            #initialize the world for the selected level
             world = reset_level(level) # Call reset_level with the chosen level number
             player.reset(100, screen_height - 130) # Reset player for the new game
             game_over = 0 # Ensure game is not in game_over state
