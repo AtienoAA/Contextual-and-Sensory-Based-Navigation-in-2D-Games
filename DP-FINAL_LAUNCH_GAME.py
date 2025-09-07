@@ -269,7 +269,7 @@ def load_settings():
         return None
 
 def draw_debug_info():
-    # Create level text surface just for debug
+    #level text surface just for debug
     debug_level_text = font.render(f"Level: {level}", True, white)
     level_rect = debug_level_text.get_rect(topleft=(40, 30))
     
